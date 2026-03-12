@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+playwright
+boto3
+python-dotenv
+langchain

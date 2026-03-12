@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>NovaFlow - Agentic Web Automation</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    margin-top:50px;
+    padding:20px;
+}
+
+h1{
+    font-size:2.5rem;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#94a3b8;
+    margin-bottom:30px;
+}
+
+.badge{
+    display:inline-block;
+    background:#3b82f6;
+    padding:5px 15px;
+    border-radius:20px;
+    font-size:0.9rem;
+    margin:5px;
+}
+
+.input-section{
+    margin-bottom:30px;
+}
+
+input{
+    width:400px;
+    padding:15px;
+    font-size:16px;
+    background:#1e293b;
+    border:2px solid #334155;
+    border-radius:8px;
+    color:white;
+    margin-right:10px;
+}
+
+input:focus{
+    outline:none;
+    border-color:#3b82f6;
+}
+
+button{
+    padding:15px 30px;
+    font-size:16px;
+    background:#3b82f6;
+    color:white;
+    border:none;
+    cursor:pointer;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+button:hover:not(:disabled){
+    background:#2563eb;
+}
+
+button:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
+.results{
+    max-width:800px;
+    margin:30px auto;
+    text-align:left;
+    display:none;
+}
+
+.results.show{
+    display:block;
+}
+
+.reasoning-box{
+    background:#1e293b;
+    border-left:4px solid #3b82f6;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:8px;
+}
+
+.reasoning-box h3{
+    color:#3b82f6;
+    margin-top:0;
+}
+
+.result-box{
+    background:#1e293b;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:8px;
+}
+
+.result-box.success{
+    border-left:4px solid #10b981;
+}
+
+.result-box.error{
+    border-left:4px solid #ef4444;
+}
+
+.url-list{
+    list-style:none;
+    padding:0;
+}
+
+.url-list li{
+    background:#0f172a;
+    padding:10px;
+    margin:5px 0;
+    border-radius:5px;
+    word-break:break-all;
+}
+
+.url-list a{
+    color:#3b82f6;
+    text-decoration:none;
+}
+
+.url-list a:hover{
+    text-decoration:underline;
+}
+
+.loading{
+    display:none;
+    margin:20px 0;
+}
+
+.spinner{
+    border:4px solid #334155;
+    border-top:4px solid #3b82f6;
+    border-radius:50%;
+    width:40px;
+    height:40px;
+    animation:spin 1s linear infinite;
+    margin:0 auto;
+}
+
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+
+.examples{
+    margin-top:15px;
+}
+
+.example{
+    display:inline-block;
+    padding:8px 15px;
+    margin:5px;
+    background:#334155;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:0.9rem;
+}
+
+.example:hover{
+    background:#3b82f6;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🤖 NovaFlow Merged</h1>
+<p class="subtitle">Your Automation + Agentic AI Layer</p>
+<div>
+    <span class="badge">Your Original Code</span>
+    <span class="badge">Amazon Nova Planning</span>
+    <span class="badge">Auto-Adaptation</span>
+</div>
+
+<div class="input-section">
+    <input id="task" placeholder="Type a command..." onkeypress="if(event.key==='Enter') run()" />
+    <button id="runBtn" onclick="run()">Run</button>
+    
+    <div class="examples">
+        <div class="example" onclick="setTask('find ai internships and open 3 results')">AI Internships</div>
+        <div class="example" onclick="setTask('search python tutorials and open 5 results')">Python Tutorials</div>
+        <div class="example" onclick="setTask('find remote jobs and open 4 results')">Remote Jobs</div>
+    </div>
+</div>
+
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>🧠 Agent planning + Your automation running...</p>
+</div>
+
+<div id="results" class="results">
+    <!-- Results will appear here -->
+</div>
+
+<script>
+
+function setTask(text){
+    document.getElementById('task').value = text;
+}
+
+async function run(){
+    
+    let task = document.getElementById('task').value;
+    
+    if(!task.trim()){
+        alert('Please enter a command');
+        return;
+    }
+    
+    let btn = document.getElementById('runBtn');
+    let loading = document.getElementById('loading');
+    let results = document.getElementById('results');
+    
+    // Disable button
+    btn.disabled = true;
+    btn.textContent = 'Running...';
+    
+    // Show loading
+    loading.style.display = 'block';
+    results.innerHTML = '';
+    results.classList.remove('show');
+    
+    try{
+        
+        let response = await fetch(`http://127.0.0.1:8000/command?task=${encodeURIComponent(task)}`);
+        let data = await response.json();
+        
+        // Hide loading
+        loading.style.display = 'none';
+        
+        // Show results
+        displayResults(data);
+        
+    }catch(error){
+        loading.style.display = 'none';
+        results.innerHTML = `
+            <div class="result-box error">
+                <h3>❌ Error</h3>
+                <p>${error.message}</p>
+            </div>
+        `;
+        results.classList.add('show');
+    }
+    
+    // Re-enable button
+    btn.disabled = false;
+    btn.textContent = 'Run';
+}
+
+function displayResults(data){
+    
+    let results = document.getElementById('results');
+    let html = '';
+    
+    // Agent's Reasoning (AGENTIC LAYER)
+    if(data.agent_reasoning){
+        html += `
+            <div class="reasoning-box">
+                <h3>🧠 Agent's Reasoning</h3>
+                <p>${data.agent_reasoning}</p>
+            </div>
+        `;
+    }
+    
+    // Execution Results (YOUR CODE)
+    if(data.result){
+        let result = data.result;
+        let statusClass = result.success ? 'success' : 'error';
+        let statusIcon = result.success ? '✓' : '✗';
+        
+        html += `
+            <div class="result-box ${statusClass}">
+                <h3>${statusIcon} Your Executor Results</h3>
+        `;
+        
+        // Opened URLs
+        if(result.opened_urls && result.opened_urls.length > 0){
+            html += `<p><strong>Opened ${result.opened_urls.length} results:</strong></p>`;
+            html += '<ul class="url-list">';
+            result.opened_urls.forEach(url => {
+                html += `<li><a href="${url}" target="_blank">${url}</a></li>`;
+            });
+            html += '</ul>';
+        }
+        
+        // Errors
+        if(result.errors && result.errors.length > 0){
+            html += `<p style="color:#ef4444;margin-top:15px;"><strong>Errors:</strong> ${result.errors.join(', ')}</p>`;
+        }
+        
+        html += '</div>';
+    }
+    
+    // Agent's Reflection (AGENTIC LAYER)
+    if(data.reflection){
+        html += `
+            <div class="reasoning-box">
+                <h3>💭 Agent's Analysis</h3>
+                <p>${data.reflection}</p>
+            </div>
+        `;
+    }
+    
+    // Adapted Plan (AGENTIC LAYER - if errors)
+    if(data.adapted_plan){
+        html += `
+            <div class="reasoning-box" style="border-left-color:#fbbf24;">
+                <h3>🔄 Agent Adapted the Plan</h3>
+                <p>${data.adapted_plan.reasoning}</p>
+                <p style="margin-top:10px;"><em>New approach: ${data.adapted_plan.query} (${data.adapted_plan.count} results)</em></p>
+            </div>
+        `;
+    }
+    
+    results.innerHTML = html;
+    results.classList.add('show');
+}
+
+</script>
+
+</body>
+</html>
