@@ -11,9 +11,9 @@ and reflects on results.
  Features
 
 - Agentic Planning** - Amazon Nova creates workflows from natural language
-- ⚙️ Smart Execution** - Playwright automation runs the plan
-- 🔄 Error Adaptation** - If errors occur, Nova creates new strategies
-- 💭 Result Reflection** - Nova analyzes outcomes and provides insights
+- Smart Execution** - Playwright automation runs the plan
+-  Error Adaptation** - If errors occur, Nova creates new strategies
+-  Result Reflection** - Nova analyzes outcomes and provides insights
 
   Tech Stack
 
